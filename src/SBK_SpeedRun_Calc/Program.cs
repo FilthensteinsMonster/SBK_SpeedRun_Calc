@@ -26,6 +26,15 @@ namespace SBK_SpeedRun_Calc
 
                 int[] seedData = ParseSeedData(seedFileCon);
 
+                // int[] Seed = new int[]{3,5,7,7,8,6,1,9,7,8,2,9,1};
+                // int[] A = new int[]{9,1,3};
+                // int[] B = new int[]{7,8};
+
+                // var Bres = SearchEntireArray(Seed, B);
+                // var Ares = SearchEntireArray(Seed, A);
+
+                // var db = "Debug";
+
                 List<int> userInput = new List<int>();
                 List<int> matches = new List<int>();
                 string inputSelected = "";
@@ -56,18 +65,12 @@ namespace SBK_SpeedRun_Calc
             }
         }
 
-        /// <summary>
-        /// search the array to see if it contains another, return the index of next elements. Bug exists, doesn't include looping
-        /// </summary>
-        /// <param name="seed">data set of expected values</param>
-        /// <param name="input">real time values</param>
-        /// <returns></returns>
         static List<int> SearchEntireArray(int[] seed, int[] input){
             List<int> seedIndexs = new List<int>();
 
             int start = input.Length;
 
-            for(int n = start; n < seed.Length - start; n++){
+            for(int n = start; n < seed.Length; n++){
                 int match = -1;
                 bool found = TrySearchArrayInstance(seed, input, n, out match);
 
@@ -82,13 +85,28 @@ namespace SBK_SpeedRun_Calc
         static bool TrySearchArrayInstance(int[] seed, int[] input, int index, out int match){
             match = -1;
 
+            int max = seed.Length;
+            int adjIndex = -1;
+
             for(int n = 0; n < input.Length; n++){
-                if(seed[index + n] != input[n]){
+
+                int idx = index + n;
+                int maxL = max - 1;
+                int overflow = maxL / idx;
+                int loopIdx = (idx % maxL) - 1;
+
+                bool hasLoop = (overflow == 0) ? true : false;
+                adjIndex = (hasLoop == true) ? loopIdx : idx;
+                
+                // debug
+                // Console.WriteLine("index: " + index +  " hasLoop: " + hasLoop + " idx,maxL,over,loopIdx: " + idx + "," + maxL + "," + overflow + "," + loopIdx +  " adj: " + adjIndex);
+
+                if(seed[adjIndex] != input[n]){
                     return false;
                 }
             }
 
-            match = index + input.Length;
+            match = adjIndex;
             return true;
         }
 
