@@ -1,0 +1,5 @@
+f,1,fan
+p,3,pan
+b,6,board
+g,2,ghost
+m,5,mouse

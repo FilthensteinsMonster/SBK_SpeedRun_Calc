@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+            "label": "Copy Folder",
+            "type": "shell",
+            "command": "cp -force ${workspaceFolder}\\src\\UserInput ${workspaceFolder}\\src\\SBK_SpeedRun_Calc\\bin\\Debug",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+	]
+}
