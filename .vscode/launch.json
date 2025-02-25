@@ -5,11 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Program",
-            "type": "node",
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}\\SBK_SpeedRun_Calc\\program.cs",
-            "preLaunchTask": "Copy Folder"
+            "program": "${workspaceFolder}/src/SBK_SpeedRun_Calc/bin/debug/SBK_SpeedRun_Calc.dll",
+            "preLaunchTask": "Copy Folder",
+            "justMyCode": false,
+            "console": "externalTerminal"
         }
     ]
 }
