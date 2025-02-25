@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SBK_SpeedRun_Calc
 {
@@ -25,6 +26,7 @@ namespace SBK_SpeedRun_Calc
                 } 
 
                 int[] seedData = ParseSeedData(seedFileCon);
+                Dictionary<string, Dictionary<string, int>> keyBinds = ParseKeyBindConfig(configFileCon);
                 
                 // int[] Seed = new int[]{3,5,7,7,8,6,1,9,7,8,2,9,1};
                 // int[] A = new int[]{9,1,3};
@@ -37,6 +39,7 @@ namespace SBK_SpeedRun_Calc
 
                 List<int> userInput = new List<int>();
                 List<int> matches = new List<int>();
+                
                 string inputSelected = "";
                 do{
                     Console.WriteLine("Enter number: ");
@@ -118,6 +121,36 @@ namespace SBK_SpeedRun_Calc
             return true;
         }
 
+        static Dictionary<string, Dictionary<string,int>> ParseKeyBindConfig(string filePath){
+            Dictionary<string, Dictionary<string,int>> result = new Dictionary<string, Dictionary<string, int>>();
+
+            if(!File.Exists(filePath)){
+                throw new Exception("Error: Key Bind file not found: " + filePath);
+            }
+
+            using(StreamReader reader = new StreamReader(filePath)){
+                while(!reader.EndOfStream){
+                    string line = reader.ReadLine().Trim();
+
+                    if(!string.IsNullOrWhiteSpace(line)){
+                        string[] values = line.Split(',');
+                        string boxType = values[0].Trim();
+                        string key = values[1].Trim();
+                        int index = int.Parse(values[2].Trim());
+
+                        if(!result.ContainsKey(boxType)){
+                            result.Add(boxType, new Dictionary<string, int>());
+                        }
+
+                        if(!result[boxType].ContainsKey(key)){
+                            result[boxType].Add(key, index);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
         static int[] ParseSeedData(string filePath){
             List<int> result = new List<int>();
 
