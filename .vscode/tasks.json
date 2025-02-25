@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+            "label": "Copy Folder",
+            "type": "shell",
+            "command": "cp -r ${workspaceFolder}\\src\\UserInput ${workspaceFolder}\\bin\\Debug",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+	]
+}
