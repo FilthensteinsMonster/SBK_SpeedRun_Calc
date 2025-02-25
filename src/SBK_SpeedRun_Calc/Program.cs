@@ -25,7 +25,7 @@ namespace SBK_SpeedRun_Calc
                 } 
 
                 int[] seedData = ParseSeedData(seedFileCon);
-
+                
                 // int[] Seed = new int[]{3,5,7,7,8,6,1,9,7,8,2,9,1};
                 // int[] A = new int[]{9,1,3};
                 // int[] B = new int[]{7,8};
@@ -51,7 +51,7 @@ namespace SBK_SpeedRun_Calc
                     Console.WriteLine("Next Seed Value Is: " + seedData[seedIndex]);
                     Console.WriteLine("Press any key to incriment next value");
                     Console.ReadKey();
-                    seedIndex += 1;
+                    seedIndex = IncrimentSeedIndex(seedIndex, seedData);
                 }while(inputSelected != escapeCondition);
             } 
             catch (Exception ex)
@@ -65,6 +65,14 @@ namespace SBK_SpeedRun_Calc
             }
         }
 
+        static int IncrimentSeedIndex(int current, int[] seed){
+            int max = seed.Length - 1;
+            int next = current + 1;
+            if(next > max){
+                next = 0;
+            }
+            return next;
+        }
         static List<int> SearchEntireArray(int[] seed, int[] input){
             List<int> seedIndexs = new List<int>();
 
