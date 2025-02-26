@@ -4,6 +4,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace SBK_SpeedRun_Calc
 {
@@ -27,6 +30,8 @@ namespace SBK_SpeedRun_Calc
 
                 int[] seedData = ParseSeedData(seedFileCon);
                 Dictionary<string, Dictionary<string, int>> keyBinds = ParseKeyBindConfig(configFileCon);
+
+                Console.WriteLine(DisplayKeyBinds(keyBinds));
                 
                 // int[] Seed = new int[]{3,5,7,7,8,6,1,9,7,8,2,9,1};
                 // int[] A = new int[]{9,1,3};
@@ -39,7 +44,7 @@ namespace SBK_SpeedRun_Calc
 
                 List<int> userInput = new List<int>();
                 List<int> matches = new List<int>();
-                
+
                 string inputSelected = "";
                 do{
                     Console.WriteLine("Enter number: ");
@@ -65,6 +70,55 @@ namespace SBK_SpeedRun_Calc
             finally{
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();
+            }
+        }
+
+        static string DisplayKeyBinds(Dictionary<string, Dictionary<string, int>> config){
+            string red = "red";
+            string blue = "blue";
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("  Blue Items");
+            sb.AppendLine("  ------------------------");
+            var blues = config[blue].Keys;
+            foreach(string key in blues){
+                sb.Append("   " + key + "  ");
+                sb.AppendLine(MapBlueBox(config[blue][key]));
+            }
+
+            sb.AppendLine("");
+             sb.AppendLine("  Red Items");
+            sb.AppendLine("  ------------------------");
+            var reds = config[red].Keys;
+            foreach(string key in reds){
+                sb.Append("   " + key + "  ");
+                sb.AppendLine(MapRedBox(config[red][key]));
+            }
+            sb.AppendLine("  ------------------------");
+
+            return sb.ToString();
+
+        }
+
+        static string MapRedBox(int n){
+            switch(n){
+                case 2: return "Hand";
+                case 3: return "Umbrealla/Parachute";
+                case 4: return "Ice";
+                case 5: return "Snowman"; 
+                case 9: return "Bomb";
+                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 2,3,4,5,9");
+            }
+        }
+
+        static string MapBlueBox(int n){
+            switch(n){
+                case 1: return "Fan";
+                case 2: return "Ghost";
+                case 3: return "Pan";
+                case 5: return "Mouse"; 
+                case 6: return "Board";
+                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,5,6");
             }
         }
 
