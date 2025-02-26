@@ -19,7 +19,7 @@ namespace SBK_SpeedRun_Calc
                 string configFileCon = Path.Combine(dir, "KeyBind.txt");
                 string seedFileCon = Path.Combine(dir,"SeedData.txt");
 
-                string escapeCondition = ".";
+                string escapeCondition = "1";
 
                 if(!Directory.Exists(dir)){
                     throw new Exception("Error, Folder not found: " + dir);  
@@ -45,9 +45,13 @@ namespace SBK_SpeedRun_Calc
                 string inputSelected = "";
                 Console.WriteLine("Enter Items in the order obtained: ");
                 do{
-                    inputSelected = Console.ReadKey().KeyChar.ToString();
-                    userInput.Add(int.Parse(keyBinds[inputSelected][1]));
-                    matches = SearchEntireArray(seedData, userInput.ToArray());                
+                    inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
+
+                    if(keyBinds.Keys.Contains(inputSelected)){
+                        userInput.Add(int.Parse(keyBinds[inputSelected][1]));
+                        matches = SearchEntireArray(seedData, userInput.ToArray());     
+                    }     
+
                 }while(matches.Count > 1 && inputSelected != escapeCondition);
 
                 Console.WriteLine("");
@@ -64,7 +68,7 @@ namespace SBK_SpeedRun_Calc
 
                 do{
                     Console.WriteLine("Next Item Is: " + MapBlueBox(seedData[seedIndex]));
-                    Console.ReadKey();
+                    inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
                     seedIndex = IncrimentSeedIndex(seedIndex, seedData);
                 }while(inputSelected != escapeCondition);
             } 
@@ -74,6 +78,7 @@ namespace SBK_SpeedRun_Calc
                 Console.WriteLine(ex.StackTrace);
             } 
             finally{
+                Console.WriteLine("");
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();
             }
@@ -102,6 +107,8 @@ namespace SBK_SpeedRun_Calc
                     sb.AppendLine(MapBlueBox(config[key][1]));
                 } else if(type == "red"){
                     sb.AppendLine(MapRedBox(config[key][1]));
+                } else {
+                    throw new Exception("Error, Item config was neither a red/blue box, please review keybind.txt file.");
                 }
             }
 
