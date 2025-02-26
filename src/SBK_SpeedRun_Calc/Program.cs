@@ -3,10 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
 
 namespace SBK_SpeedRun_Calc
 {
@@ -29,7 +26,7 @@ namespace SBK_SpeedRun_Calc
                 } 
 
                 int[] seedData = ParseSeedData(seedFileCon);
-                Dictionary<string, Dictionary<string, int>> keyBinds = ParseKeyBindConfig(configFileCon);
+                Dictionary<string, string[]> keyBinds = ParseKeyBindConfig(configFileCon);
 
                 Console.WriteLine(DisplayKeyBinds(keyBinds));
                 
@@ -73,51 +70,56 @@ namespace SBK_SpeedRun_Calc
             }
         }
 
-        static string DisplayKeyBinds(Dictionary<string, Dictionary<string, int>> config){
-            string red = "red";
-            string blue = "blue";
+        static string DisplayKeyBinds(Dictionary<string, string[]> config){
+            bool fistRed = false;
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine("  Blue Items");
             sb.AppendLine("  ------------------------");
-            var blues = config[blue].Keys;
-            foreach(string key in blues){
-                sb.Append("   " + key + "  ");
-                sb.AppendLine(MapBlueBox(config[blue][key]));
-            }
+            
+            var keys = config.Keys;
+            foreach(string key in keys){
+              
+                string type = config[key][0];
+                if(type == "red" && !fistRed){
+                    fistRed = true;
+                    sb.AppendLine("");
+                    sb.AppendLine("  Red Items");
+                    sb.AppendLine("  ------------------------");
+                }
 
-            sb.AppendLine("");
-             sb.AppendLine("  Red Items");
-            sb.AppendLine("  ------------------------");
-            var reds = config[red].Keys;
-            foreach(string key in reds){
                 sb.Append("   " + key + "  ");
-                sb.AppendLine(MapRedBox(config[red][key]));
+                if(type == "blue"){
+                    sb.AppendLine(MapBlueBox(config[key][1]));
+                } else if(type == "red"){
+                    sb.AppendLine(MapRedBox(config[key][1]));
+                }
             }
+            
+            sb.AppendLine("");
             sb.AppendLine("  ------------------------");
 
             return sb.ToString();
-
         }
 
-        static string MapRedBox(int n){
+        static string MapRedBox(string n){
             switch(n){
-                case 2: return "Hand";
-                case 3: return "Umbrealla/Parachute";
-                case 4: return "Ice";
-                case 5: return "Snowman"; 
-                case 9: return "Bomb";
+                case "2": return "Hand";
+                case "3": return "Umbrealla/Parachute";
+                case "4": return "Ice";
+                case "5": return "Snowman"; 
+                case "9": return "Bomb";
                 default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 2,3,4,5,9");
             }
         }
 
-        static string MapBlueBox(int n){
+        static string MapBlueBox(string n){
             switch(n){
-                case 1: return "Fan";
-                case 2: return "Ghost";
-                case 3: return "Pan";
-                case 5: return "Mouse"; 
-                case 6: return "Board";
+                case "1": return "Fan";
+                case "2": return "Ghost";
+                case "3": return "Pan";
+                case "5": return "Mouse"; 
+                case "6": return "Board";
                 default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,5,6");
             }
         }
@@ -175,8 +177,8 @@ namespace SBK_SpeedRun_Calc
             return true;
         }
 
-        static Dictionary<string, Dictionary<string,int>> ParseKeyBindConfig(string filePath){
-            Dictionary<string, Dictionary<string,int>> result = new Dictionary<string, Dictionary<string, int>>();
+        static Dictionary<string, string[]> ParseKeyBindConfig(string filePath){
+            Dictionary<string, string[]> result = new Dictionary<string, string[]>();
 
             if(!File.Exists(filePath)){
                 throw new Exception("Error: Key Bind file not found: " + filePath);
@@ -190,14 +192,10 @@ namespace SBK_SpeedRun_Calc
                         string[] values = line.Split(',');
                         string boxType = values[0].Trim();
                         string key = values[1].Trim();
-                        int index = int.Parse(values[2].Trim());
+                        string index =  values[2].Trim();
 
-                        if(!result.ContainsKey(boxType)){
-                            result.Add(boxType, new Dictionary<string, int>());
-                        }
-
-                        if(!result[boxType].ContainsKey(key)){
-                            result[boxType].Add(key, index);
+                        if(!result.ContainsKey(key)){
+                            result.Add(key, new string[]{boxType, index});
                         }
                     }
                 }
