@@ -43,18 +43,27 @@ namespace SBK_SpeedRun_Calc
                 List<int> matches = new List<int>();
 
                 string inputSelected = "";
+                Console.WriteLine("Enter Items in the order obtained: ");
                 do{
-                    Console.WriteLine("Enter number: ");
                     inputSelected = Console.ReadKey().KeyChar.ToString();
-                    userInput.Add(int.Parse(inputSelected));
-                    matches = SearchEntireArray(seedData, userInput.ToArray());
+                    userInput.Add(int.Parse(keyBinds[inputSelected][1]));
+                    matches = SearchEntireArray(seedData, userInput.ToArray());                
                 }while(matches.Count > 1 && inputSelected != escapeCondition);
 
+                Console.WriteLine("");
+                if(matches.Count == 0){
+                    Console.WriteLine("Invalid item collection, either user input error or seed data is wrong.");
+                }
+
                 int seedIndex = matches[0];
+                
+                Console.WriteLine("");
+                Console.WriteLine("***   RNG Seed identified!   ***");
+                Console.WriteLine("Press any key to incriment next value");
+                Console.WriteLine("");
 
                 do{
-                    Console.WriteLine("Next Seed Value Is: " + seedData[seedIndex]);
-                    Console.WriteLine("Press any key to incriment next value");
+                    Console.WriteLine("Next Item Is: " + MapBlueBox(seedData[seedIndex]));
                     Console.ReadKey();
                     seedIndex = IncrimentSeedIndex(seedIndex, seedData);
                 }while(inputSelected != escapeCondition);
@@ -95,13 +104,16 @@ namespace SBK_SpeedRun_Calc
                     sb.AppendLine(MapRedBox(config[key][1]));
                 }
             }
-            
+
             sb.AppendLine("");
             sb.AppendLine("  ------------------------");
 
             return sb.ToString();
         }
 
+        static string MapRedBox(int n){
+            return MapRedBox(n.ToString());
+        }
         static string MapRedBox(string n){
             switch(n){
                 case "2": return "Hand";
@@ -113,14 +125,18 @@ namespace SBK_SpeedRun_Calc
             }
         }
 
+        static string MapBlueBox(int n){
+            return MapBlueBox(n.ToString());
+        }
         static string MapBlueBox(string n){
             switch(n){
                 case "1": return "Fan";
                 case "2": return "Ghost";
                 case "3": return "Pan";
+                case "4": return "Rock";
                 case "5": return "Mouse"; 
                 case "6": return "Board";
-                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,5,6");
+                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,4,5,6");
             }
         }
 

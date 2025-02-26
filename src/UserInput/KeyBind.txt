@@ -1,6 +1,7 @@
 blue,f,1,fan
 blue,g,2,ghost
 blue,p,3,pan
+blue,r,4,rock
 blue,m,5,mouse
 blue,b,6,board
 
