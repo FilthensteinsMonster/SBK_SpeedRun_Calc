@@ -4,7 +4,7 @@
 		{
             "label": "Copy Folder",
             "type": "shell",
-            "command": "cp -force ${workspaceFolder}\\src\\UserInput ${workspaceFolder}\\src\\SBK_SpeedRun_Calc\\bin\\Debug",
+            "command": "Copy-Item -Path ${workspaceFolder}\\src\\UserInput -Destination ${workspaceFolder}\\src\\SBK_SpeedRun_Calc\\bin\\Debug -Recurse -Force",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

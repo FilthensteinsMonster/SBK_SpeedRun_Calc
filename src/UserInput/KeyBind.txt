@@ -1,5 +1,12 @@
-f,1,fan
-p,3,pan
-b,6,board
-g,2,ghost
-m,5,mouse
+blue,f,1,fan
+blue,g,2,ghost
+blue,p,3,pan
+blue,r,4,rock
+blue,m,5,mouse
+blue,b,6,board
+
+red ,h,2,hand
+red ,u,3,umbrella
+red ,i,4,ice
+red ,s,5,snowman
+red ,x,9,bomb
