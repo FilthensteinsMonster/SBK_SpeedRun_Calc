@@ -25,7 +25,7 @@ namespace SBK_SpeedRun_Calc
                     throw new Exception("Error, Folder not found: " + dir);  
                 } 
 
-                int[] seedData = ParseSeedData(seedFileCon);
+                ItemBox[] seedData = ParseSeedData(seedFileCon);
                 Dictionary<string, string[]> keyBinds = ParseKeyBindConfig(configFileCon);
 
                 Console.WriteLine(DisplayKeyBinds(keyBinds));
@@ -67,7 +67,10 @@ namespace SBK_SpeedRun_Calc
                 Console.WriteLine("");
 
                 do{
-                    Console.WriteLine("Next Item Is: " + MapBlueBox(seedData[seedIndex]));
+                    Console.WriteLine("Seed Value is: " + seedIndex);
+                    Console.WriteLine("Next Red Item Is: " + MapRedBox(seedData[seedIndex].Red));
+                    Console.WriteLine("Next Blue Item Is: " + MapBlueBox(seedData[seedIndex].Blue));
+
                     inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
                     seedIndex = IncrimentSeedIndex(seedIndex, seedData);
                 }while(inputSelected != escapeCondition);
@@ -147,6 +150,14 @@ namespace SBK_SpeedRun_Calc
             }
         }
 
+        static int IncrimentSeedIndex(int current, ItemBox[] seed){
+            int max = seed.Length - 1;
+            int next = current + 1;
+            if(next > max){
+                next = 0;
+            }
+            return next;
+        }
         static int IncrimentSeedIndex(int current, int[] seed){
             int max = seed.Length - 1;
             int next = current + 1;
@@ -156,6 +167,23 @@ namespace SBK_SpeedRun_Calc
             return next;
         }
         static List<int> SearchEntireArray(int[] seed, int[] input){
+            List<int> seedIndexs = new List<int>();
+
+            int start = input.Length;
+
+            for(int n = start; n < seed.Length; n++){
+                int match = -1;
+                bool found = TrySearchArrayInstance(seed, input, n, out match);
+
+                if(found && match != -1){
+                    seedIndexs.Add(match);
+                }
+            }
+
+            return seedIndexs;
+        }
+
+        static List<int> SearchEntireArray(ItemBox[] seed, int[] input){
             List<int> seedIndexs = new List<int>();
 
             int start = input.Length;
@@ -200,6 +228,34 @@ namespace SBK_SpeedRun_Calc
             return true;
         }
 
+        static bool TrySearchArrayInstance(ItemBox[] seed, int[] input, int index, out int match){
+            match = -1;
+
+            int max = seed.Length;
+            int adjIndex = -1;
+
+            for(int n = 0; n < input.Length; n++){
+
+                int idx = index + n;
+                int maxL = max - 1;
+                int overflow = maxL / idx;
+                int loopIdx = (idx % maxL) - 1;
+
+                bool hasLoop = (overflow == 0) ? true : false;
+                adjIndex = (hasLoop == true) ? loopIdx : idx;
+                
+                // debug
+                // Console.WriteLine("index: " + index +  " hasLoop: " + hasLoop + " idx,maxL,over,loopIdx: " + idx + "," + maxL + "," + overflow + "," + loopIdx +  " adj: " + adjIndex);
+
+                if(seed[adjIndex].Blue != input[n] && seed[adjIndex].Red != input[n]){
+                    return false;
+                }
+            }
+
+            match = adjIndex;
+            return true;
+        }
+
         static Dictionary<string, string[]> ParseKeyBindConfig(string filePath){
             Dictionary<string, string[]> result = new Dictionary<string, string[]>();
 
@@ -226,8 +282,9 @@ namespace SBK_SpeedRun_Calc
 
             return result;
         }
-        static int[] ParseSeedData(string filePath){
-            List<int> result = new List<int>();
+        static ItemBox[] ParseSeedData(string filePath){
+
+            List<ItemBox> result = new List<ItemBox>();
 
             if(!File.Exists(filePath)){
                 throw new Exception("Error: Seed file not found: " + filePath);
@@ -238,12 +295,23 @@ namespace SBK_SpeedRun_Calc
                     string line = reader.ReadLine().Trim();
 
                     if(!string.IsNullOrWhiteSpace(line)){
-                        result.Add(int.Parse(line));
+                        string[] values = line.Split(',');
+                        int blue = int.Parse(values[0].Trim());
+                        int red = int.Parse(values[1].Trim());
+
+                        ItemBox item = new ItemBox(){Red = red, Blue = blue};
+                        result.Add(item);
                     }
                 }
             }
 
             return result.ToArray();
         }
+    }
+
+    class ItemBox 
+    {
+        public int Red;
+        public int Blue;
     }
 }
