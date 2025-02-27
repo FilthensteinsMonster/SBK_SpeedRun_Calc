@@ -25,20 +25,10 @@ namespace SBK_SpeedRun_Calc
                     throw new Exception("Error, Folder not found: " + dir);  
                 } 
 
-                ItemBox[] seedData = ParseSeedData(seedFileCon);
-                Dictionary<string, string[]> keyBinds = ParseKeyBindConfig(configFileCon);
+                ItemBox[] seedData = Parse.SeedData(seedFileCon);
+                Dictionary<string, string[]> keyBinds = Parse.KeyBindConfig(configFileCon);
 
-                Console.WriteLine(DisplayKeyBinds(keyBinds));
-                
-                // int[] Seed = new int[]{3,5,7,7,8,6,1,9,7,8,2,9,1};
-                // int[] A = new int[]{9,1,3};
-                // int[] B = new int[]{7,8};
-
-                // var Bres = SearchEntireArray(Seed, B);
-                // var Ares = SearchEntireArray(Seed, A);
-
-                // var db = "Debug";
-
+                Console.WriteLine(Display.KeyBinds(keyBinds));
                 List<int> userInput = new List<int>();
                 List<int> matches = new List<int>();
 
@@ -49,7 +39,7 @@ namespace SBK_SpeedRun_Calc
 
                     if(keyBinds.Keys.Contains(inputSelected)){
                         userInput.Add(int.Parse(keyBinds[inputSelected][1]));
-                        matches = SearchEntireArray(seedData, userInput.ToArray());     
+                        matches = Logic.SearchEntireArray(seedData, userInput.ToArray());     
                     }     
 
                 }while(matches.Count > 1 && inputSelected != escapeCondition);
@@ -68,11 +58,11 @@ namespace SBK_SpeedRun_Calc
 
                 do{
                     Console.WriteLine("Seed Value is: " + seedIndex);
-                    Console.WriteLine("Next Red Item Is: " + MapRedBox(seedData[seedIndex].Red));
-                    Console.WriteLine("Next Blue Item Is: " + MapBlueBox(seedData[seedIndex].Blue));
+                    Console.WriteLine("Next Red Item Is: " + Display.RedItem(seedData[seedIndex].Red));
+                    Console.WriteLine("Next Blue Item Is: " + Display.BlueItem(seedData[seedIndex].Blue));
 
                     inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
-                    seedIndex = IncrimentSeedIndex(seedIndex, seedData);
+                    seedIndex = Logic.IncrimentSeedIndex(seedIndex, seedData);
                 }while(inputSelected != escapeCondition);
             } 
             catch (Exception ex)
@@ -86,232 +76,5 @@ namespace SBK_SpeedRun_Calc
                 Console.ReadKey();
             }
         }
-
-        static string DisplayKeyBinds(Dictionary<string, string[]> config){
-            bool fistRed = false;
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("  Blue Items");
-            sb.AppendLine("  ------------------------");
-            
-            var keys = config.Keys;
-            foreach(string key in keys){
-              
-                string type = config[key][0];
-                if(type == "red" && !fistRed){
-                    fistRed = true;
-                    sb.AppendLine("");
-                    sb.AppendLine("  Red Items");
-                    sb.AppendLine("  ------------------------");
-                }
-
-                sb.Append("   " + key + "  ");
-                if(type == "blue"){
-                    sb.AppendLine(MapBlueBox(config[key][1]));
-                } else if(type == "red"){
-                    sb.AppendLine(MapRedBox(config[key][1]));
-                } else {
-                    throw new Exception("Error, Item config was neither a red/blue box, please review keybind.txt file.");
-                }
-            }
-
-            sb.AppendLine("");
-            sb.AppendLine("  ------------------------");
-
-            return sb.ToString();
-        }
-
-        static string MapRedBox(int n){
-            return MapRedBox(n.ToString());
-        }
-        static string MapRedBox(string n){
-            switch(n){
-                case "2": return "Hand";
-                case "3": return "Umbrealla/Parachute";
-                case "4": return "Ice";
-                case "5": return "Snowman"; 
-                case "9": return "Bomb";
-                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 2,3,4,5,9");
-            }
-        }
-
-        static string MapBlueBox(int n){
-            return MapBlueBox(n.ToString());
-        }
-        static string MapBlueBox(string n){
-            switch(n){
-                case "1": return "Fan";
-                case "2": return "Ghost";
-                case "3": return "Pan";
-                case "4": return "Rock";
-                case "5": return "Mouse"; 
-                case "6": return "Board";
-                default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,4,5,6");
-            }
-        }
-
-        static int IncrimentSeedIndex(int current, ItemBox[] seed){
-            int max = seed.Length - 1;
-            int next = current + 1;
-            if(next > max){
-                next = 0;
-            }
-            return next;
-        }
-        static int IncrimentSeedIndex(int current, int[] seed){
-            int max = seed.Length - 1;
-            int next = current + 1;
-            if(next > max){
-                next = 0;
-            }
-            return next;
-        }
-        static List<int> SearchEntireArray(int[] seed, int[] input){
-            List<int> seedIndexs = new List<int>();
-
-            int start = input.Length;
-
-            for(int n = start; n < seed.Length; n++){
-                int match = -1;
-                bool found = TrySearchArrayInstance(seed, input, n, out match);
-
-                if(found && match != -1){
-                    seedIndexs.Add(match);
-                }
-            }
-
-            return seedIndexs;
-        }
-
-        static List<int> SearchEntireArray(ItemBox[] seed, int[] input){
-            List<int> seedIndexs = new List<int>();
-
-            int start = input.Length;
-
-            for(int n = start; n < seed.Length; n++){
-                int match = -1;
-                bool found = TrySearchArrayInstance(seed, input, n, out match);
-
-                if(found && match != -1){
-                    seedIndexs.Add(match);
-                }
-            }
-
-            return seedIndexs;
-        }
-
-        static bool TrySearchArrayInstance(int[] seed, int[] input, int index, out int match){
-            match = -1;
-
-            int max = seed.Length;
-            int adjIndex = -1;
-
-            for(int n = 0; n < input.Length; n++){
-
-                int idx = index + n;
-                int maxL = max - 1;
-                int overflow = maxL / idx;
-                int loopIdx = (idx % maxL) - 1;
-
-                bool hasLoop = (overflow == 0) ? true : false;
-                adjIndex = (hasLoop == true) ? loopIdx : idx;
-                
-                // debug
-                // Console.WriteLine("index: " + index +  " hasLoop: " + hasLoop + " idx,maxL,over,loopIdx: " + idx + "," + maxL + "," + overflow + "," + loopIdx +  " adj: " + adjIndex);
-
-                if(seed[adjIndex] != input[n]){
-                    return false;
-                }
-            }
-
-            match = adjIndex;
-            return true;
-        }
-
-        static bool TrySearchArrayInstance(ItemBox[] seed, int[] input, int index, out int match){
-            match = -1;
-
-            int max = seed.Length;
-            int adjIndex = -1;
-
-            for(int n = 0; n < input.Length; n++){
-
-                int idx = index + n;
-                int maxL = max - 1;
-                int overflow = maxL / idx;
-                int loopIdx = (idx % maxL) - 1;
-
-                bool hasLoop = (overflow == 0) ? true : false;
-                adjIndex = (hasLoop == true) ? loopIdx : idx;
-                
-                // debug
-                // Console.WriteLine("index: " + index +  " hasLoop: " + hasLoop + " idx,maxL,over,loopIdx: " + idx + "," + maxL + "," + overflow + "," + loopIdx +  " adj: " + adjIndex);
-
-                if(seed[adjIndex].Blue != input[n] && seed[adjIndex].Red != input[n]){
-                    return false;
-                }
-            }
-
-            match = adjIndex;
-            return true;
-        }
-
-        static Dictionary<string, string[]> ParseKeyBindConfig(string filePath){
-            Dictionary<string, string[]> result = new Dictionary<string, string[]>();
-
-            if(!File.Exists(filePath)){
-                throw new Exception("Error: Key Bind file not found: " + filePath);
-            }
-
-            using(StreamReader reader = new StreamReader(filePath)){
-                while(!reader.EndOfStream){
-                    string line = reader.ReadLine().Trim();
-
-                    if(!string.IsNullOrWhiteSpace(line)){
-                        string[] values = line.Split(',');
-                        string boxType = values[0].Trim();
-                        string key = values[1].Trim();
-                        string index =  values[2].Trim();
-
-                        if(!result.ContainsKey(key)){
-                            result.Add(key, new string[]{boxType, index});
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-        static ItemBox[] ParseSeedData(string filePath){
-
-            List<ItemBox> result = new List<ItemBox>();
-
-            if(!File.Exists(filePath)){
-                throw new Exception("Error: Seed file not found: " + filePath);
-            }
-
-            using(StreamReader reader = new StreamReader(filePath)){
-                while(!reader.EndOfStream){
-                    string line = reader.ReadLine().Trim();
-
-                    if(!string.IsNullOrWhiteSpace(line)){
-                        string[] values = line.Split(',');
-                        int blue = int.Parse(values[0].Trim());
-                        int red = int.Parse(values[1].Trim());
-
-                        ItemBox item = new ItemBox(){Red = red, Blue = blue};
-                        result.Add(item);
-                    }
-                }
-            }
-
-            return result.ToArray();
-        }
-    }
-
-    class ItemBox 
-    {
-        public int Red;
-        public int Blue;
     }
 }
