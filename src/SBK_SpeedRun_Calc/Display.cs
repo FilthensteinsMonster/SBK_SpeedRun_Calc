@@ -75,6 +75,7 @@ namespace SBK_SpeedRun_Calc{
 
         public static void SeedFound(){
             Console.WriteLine("");
+            Console.WriteLine("");
             Console.WriteLine("***   RNG Seed identified!   ***");
             Console.WriteLine("Press any key to incriment next value");
             Console.WriteLine("");
