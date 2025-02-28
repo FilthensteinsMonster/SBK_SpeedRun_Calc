@@ -61,5 +61,28 @@ namespace SBK_SpeedRun_Calc{
             match = adjIndex;
             return true;
         }
+
+        public static int NextBlueItem(ItemBox[] seed, int index, int itemId){      
+            List<ItemBox> temp = new List<ItemBox>(seed);
+            for(int n = 0; n < index; n++){
+               temp.Add(seed[n]);
+            }
+
+            for(int n = index; n < temp.Count; n++){
+                if(temp[n].Blue == itemId){
+                    return n - index;
+                }
+            }
+            
+            throw new Exception("Error related to NextBlueItem() no item matching id " + itemId + " was found. Review KeyBind/Seed file.");
+        }
+
+        public static int RollIndexDelta(int seedSize, int targetIndex, int currentIndex){
+            if(targetIndex >= currentIndex){
+                return targetIndex - currentIndex;
+            }
+
+           return targetIndex - currentIndex + seedSize;
+        }
     }
 }

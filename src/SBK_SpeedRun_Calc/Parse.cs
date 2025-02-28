@@ -1,5 +1,31 @@
 namespace SBK_SpeedRun_Calc{
     static class Parse{
+
+        public static Dictionary<string,string> NoticeConfig(string filePath){
+            Dictionary<string,string> result = new Dictionary<string, string>();
+
+            if(!File.Exists(filePath)){
+                throw new Exception("Error: Seed file not found: " + filePath);
+            }
+
+            using(StreamReader reader = new StreamReader(filePath)){
+                while(!reader.EndOfStream){
+                    string line = reader.ReadLine().Trim();
+
+                    if(!string.IsNullOrWhiteSpace(line)){
+                        string[] values = line.Split(',');
+                        string details =  values[0].Trim(); 
+                        string index =  values[1].Trim();
+
+                        result.Add(details,index);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+
         public static Dictionary<string, string[]> KeyBindConfig(string filePath){
             Dictionary<string, string[]> result = new Dictionary<string, string[]>();
 

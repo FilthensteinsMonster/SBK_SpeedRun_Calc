@@ -17,6 +17,7 @@ namespace SBK_SpeedRun_Calc
             string logDir = Path.Combine(exePath, "Logs");
             string configFileCon = Path.Combine(dir, "KeyBind.txt");
             string seedFileCon = Path.Combine(dir,"SeedData.txt");
+            string noticeFileCon = Path.Combine(dir,"CustomNotice.txt");
             string logFileCon = Path.Combine(logDir, DateTime.Now.ToString("MMddyyyy") + "_" + DateTime.Now.ToString("hhmmss") + "_log.txt");
             string escapeCondition = "1";
             string resetCondition = "0";
@@ -33,6 +34,7 @@ namespace SBK_SpeedRun_Calc
 
                 ItemBox[] seedData = Parse.SeedData(seedFileCon);
                 Dictionary<string, string[]> keyBinds = Parse.KeyBindConfig(configFileCon);
+                Dictionary<string, string> notice = Parse.NoticeConfig(noticeFileCon);
 
                 string inputSelected = "";
                 do{
@@ -52,10 +54,7 @@ namespace SBK_SpeedRun_Calc
                             matches = Logic.SearchEntireArray(seedData, userInputVal.ToArray(), userInputColor.ToArray());    
 
                             if(matches.Count == 0){
-                                Console.WriteLine("");
-                                Console.WriteLine("Invalid item order, either user input error or seed data is wrong.");
-                                Console.WriteLine("Resetting the app.");
-                                Console.WriteLine("");
+                                Display.InvalidUserInput();
                                 inputSelected = resetCondition;
                             } 
                         }     
@@ -69,7 +68,7 @@ namespace SBK_SpeedRun_Calc
 
                         do{
                             seedIndex = Logic.IncrimentSeedIndex(seedIndex, seedData);
-                            Display.SeedInfo(seedIndex, seedData);
+                            Display.SeedInfo(seedIndex, seedData, notice);
                             inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
                             Logs.Add(inputSelected);
                             Console.WriteLine("");

@@ -81,10 +81,16 @@ namespace SBK_SpeedRun_Calc{
             Console.WriteLine("");
         }
 
-        public static void SeedInfo(int seedIndex, ItemBox[] seedData){
+        public static void SeedInfo(int seedIndex, ItemBox[] seedData, Dictionary<string,string> notice){
             Console.WriteLine("Seed Value is: " + seedIndex);
             Console.WriteLine("Next Red Item Is: " + RedItem(seedData[seedIndex].Red));
             Console.WriteLine("Next Blue Item Is: " + BlueItem(seedData[seedIndex].Blue));
+            Console.WriteLine("Next Fan: " + Logic.NextBlueItem(seedData, seedIndex, 1));
+            Console.WriteLine("Next Board: " + Logic.NextBlueItem(seedData, seedIndex, 6));
+            foreach(string key in notice.Keys){
+                int target = int.Parse(notice[key]);
+                Console.WriteLine(key + ": " + Logic.RollIndexDelta(seedData.Length, target, seedIndex));
+            } 
         }
 
         public static void ErrorMssg(Exception ex, string logDir){
@@ -98,6 +104,13 @@ namespace SBK_SpeedRun_Calc{
             Console.WriteLine("Reach out for help and send the log file if you believe the tool isn't working.");
             Console.WriteLine("Press any key to close.");
             Console.ReadKey();
+        }
+
+        public static void InvalidUserInput(){
+            Console.WriteLine("");
+            Console.WriteLine("Invalid item order, either user input error or seed data is wrong.");
+            Console.WriteLine("Resetting the app.");
+            Console.WriteLine("");
         }
 
     }
