@@ -37,7 +37,8 @@ namespace SBK_SpeedRun_Calc
                 string inputSelected = "";
                 do{
                     Display.KeyBinds(keyBinds);
-                    List<int> userInput = new List<int>();
+                    List<int> userInputVal = new List<int>();
+                    List<string> userInputColor = new List<string>();
                     List<int> matches = new List<int>();
 
                     Console.WriteLine("Enter Items in the order obtained: ");
@@ -45,9 +46,10 @@ namespace SBK_SpeedRun_Calc
                         inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
                         Logs.Add(inputSelected);
 
-                        if(keyBinds.Keys.Contains(inputSelected)){
-                            userInput.Add(int.Parse(keyBinds[inputSelected][1]));
-                            matches = Logic.SearchEntireArray(seedData, userInput.ToArray());    
+                        if(keyBinds.Keys.Contains(inputSelected)){                                               
+                            userInputColor.Add(keyBinds[inputSelected][0]);
+                            userInputVal.Add(int.Parse(keyBinds[inputSelected][1]));
+                            matches = Logic.SearchEntireArray(seedData, userInputVal.ToArray(), userInputColor.ToArray());    
 
                             if(matches.Count == 0){
                                 Console.WriteLine("");
