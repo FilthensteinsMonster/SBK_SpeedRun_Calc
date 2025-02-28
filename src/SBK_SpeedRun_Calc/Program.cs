@@ -11,19 +11,24 @@ namespace SBK_SpeedRun_Calc
     {
         static void Main(string[] args)
         {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string exePath = Path.GetDirectoryName(assembly.Location);
+            string dir = Path.Combine(exePath, "UserInput"); 
+            string logDir = Path.Combine(exePath, "Logs");
+            string configFileCon = Path.Combine(dir, "KeyBind.txt");
+            string seedFileCon = Path.Combine(dir,"SeedData.txt");
+            string logFileCon = Path.Combine(logDir, DateTime.Now.ToString("MMddyyyy") + "_" + DateTime.Now.ToString("hhmmss") + "_log.txt");
+            string escapeCondition = "1";
+            string resetCondition = "0";
+            Logger Logs = new Logger(logFileCon);
+            
             try{
-                Assembly assembly = Assembly.GetExecutingAssembly();
-                string exePath = Path.GetDirectoryName(assembly.Location);
-                string dir = Path.Combine(exePath, "UserInput"); 
-
-                string configFileCon = Path.Combine(dir, "KeyBind.txt");
-                string seedFileCon = Path.Combine(dir,"SeedData.txt");
-
-                string escapeCondition = "1";
-                string resetCondition = "0";
-
                 if(!Directory.Exists(dir)){
                     throw new Exception("Error, Folder not found: " + dir);  
+                } 
+
+                if(!Directory.Exists(logDir)){
+                    Directory.CreateDirectory(logDir);
                 } 
 
                 ItemBox[] seedData = Parse.SeedData(seedFileCon);
@@ -38,6 +43,7 @@ namespace SBK_SpeedRun_Calc
                     Console.WriteLine("Enter Items in the order obtained: ");
                     do{
                         inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
+                        Logs.Add(inputSelected);
 
                         if(keyBinds.Keys.Contains(inputSelected)){
                             userInput.Add(int.Parse(keyBinds[inputSelected][1]));
@@ -45,7 +51,7 @@ namespace SBK_SpeedRun_Calc
 
                             if(matches.Count == 0){
                                 Console.WriteLine("");
-                                Console.WriteLine("Invalid item collection, either user input error or seed data is wrong.");
+                                Console.WriteLine("Invalid item order, either user input error or seed data is wrong.");
                                 Console.WriteLine("Resetting the app.");
                                 Console.WriteLine("");
                                 inputSelected = resetCondition;
@@ -63,6 +69,7 @@ namespace SBK_SpeedRun_Calc
                             seedIndex = Logic.IncrimentSeedIndex(seedIndex, seedData);
                             Display.SeedInfo(seedIndex, seedData);
                             inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
+                            Logs.Add(inputSelected);
                             Console.WriteLine("");
                         }while(inputSelected != escapeCondition && inputSelected != resetCondition);
                     }
@@ -71,13 +78,11 @@ namespace SBK_SpeedRun_Calc
             } 
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                Console.WriteLine("Press any key to close.");
-                Console.ReadKey();
+                Logs.Add(ex);
+                Display.ErrorMssg(ex, logDir);
             } 
             finally{
-                Console.WriteLine("ToDo Logging");
+                Logs.WriteLogs();
             }
         }
     }

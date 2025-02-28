@@ -85,7 +85,20 @@ namespace SBK_SpeedRun_Calc{
             Console.WriteLine("Seed Value is: " + seedIndex);
             Console.WriteLine("Next Red Item Is: " + RedItem(seedData[seedIndex].Red));
             Console.WriteLine("Next Blue Item Is: " + BlueItem(seedData[seedIndex].Blue));
-         }
+        }
+
+        public static void ErrorMssg(Exception ex, string logDir){
+            Console.WriteLine("");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+            Console.WriteLine("");
+            Console.WriteLine("Sorry you've encountered an error. :(");
+            Console.WriteLine("Please review the messages above, it might explain why the app broke.");
+            Console.WriteLine("Log files of user input exists at: " + logDir);
+            Console.WriteLine("Reach out for help and send the log file if you believe the tool isn't working.");
+            Console.WriteLine("Press any key to close.");
+            Console.ReadKey();
+        }
 
     }
 }
