@@ -4,10 +4,16 @@ namespace SBK_SpeedRun_Calc{
 
     static class Display{
         
-        public static string KeyBinds(Dictionary<string, string[]> config){
+        public static void KeyBinds(Dictionary<string, string[]> config){
             bool fistRed = false;
             StringBuilder sb = new StringBuilder();
 
+            sb.AppendLine("  App Keys");
+            sb.AppendLine("  ------------------------");
+            sb.AppendLine("   " + "1" + "  " + "Terminate Program");
+            sb.AppendLine("   " + "0" + "  " + "Reset Program");
+            
+            sb.AppendLine("");
             sb.AppendLine("  Blue Items");
             sb.AppendLine("  ------------------------");
             
@@ -35,7 +41,7 @@ namespace SBK_SpeedRun_Calc{
             sb.AppendLine("");
             sb.AppendLine("  ------------------------");
 
-            return sb.ToString();
+            Console.WriteLine(sb.ToString());
         }
 
         public  static string RedItem(int n){
@@ -66,6 +72,19 @@ namespace SBK_SpeedRun_Calc{
                 default: throw new Exception("Invalid item mapping id passed, value passed is: " + n + " expected were 1,2,3,4,5,6");
             }
         }
+
+        public static void SeedFound(){
+            Console.WriteLine("");
+            Console.WriteLine("***   RNG Seed identified!   ***");
+            Console.WriteLine("Press any key to incriment next value");
+            Console.WriteLine("");
+        }
+
+        public static void SeedInfo(int seedIndex, ItemBox[] seedData){
+            Console.WriteLine("Seed Value is: " + seedIndex);
+            Console.WriteLine("Next Red Item Is: " + RedItem(seedData[seedIndex].Red));
+            Console.WriteLine("Next Blue Item Is: " + BlueItem(seedData[seedIndex].Blue));
+         }
 
     }
 }

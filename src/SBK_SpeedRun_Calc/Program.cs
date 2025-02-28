@@ -28,7 +28,7 @@ namespace SBK_SpeedRun_Calc
                 ItemBox[] seedData = Parse.SeedData(seedFileCon);
                 Dictionary<string, string[]> keyBinds = Parse.KeyBindConfig(configFileCon);
 
-                Console.WriteLine(Display.KeyBinds(keyBinds));
+                Display.KeyBinds(keyBinds);
                 List<int> userInput = new List<int>();
                 List<int> matches = new List<int>();
 
@@ -49,20 +49,14 @@ namespace SBK_SpeedRun_Calc
                     Console.WriteLine("Invalid item collection, either user input error or seed data is wrong.");
                 }
 
-                int seedIndex = matches[0];
-                
-                Console.WriteLine("");
-                Console.WriteLine("***   RNG Seed identified!   ***");
-                Console.WriteLine("Press any key to incriment next value");
-                Console.WriteLine("");
+                int seedIndex = matches[0];                
+                Display.SeedFound();
 
                 do{
-                    Console.WriteLine("Seed Value is: " + seedIndex);
-                    Console.WriteLine("Next Red Item Is: " + Display.RedItem(seedData[seedIndex].Red));
-                    Console.WriteLine("Next Blue Item Is: " + Display.BlueItem(seedData[seedIndex].Blue));
-
-                    inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
                     seedIndex = Logic.IncrimentSeedIndex(seedIndex, seedData);
+                    Display.SeedInfo(seedIndex, seedData);
+                    inputSelected = Console.ReadKey().KeyChar.ToString().ToLower();
+                    Console.WriteLine("");
                 }while(inputSelected != escapeCondition);
             } 
             catch (Exception ex)
